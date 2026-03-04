@@ -61,6 +61,14 @@ Hey, Netology
 
 ## Решение
 
+![](img/img-02-01.png)
+
+![](img/img-02-02.png)
+
+![](img/img-02-03.png)
+
+![](img/img-02-04.png)
+
 ---
 
 ## Задача 3
