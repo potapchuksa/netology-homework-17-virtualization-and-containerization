@@ -1,1 +1,3 @@
-# netology-homework-17-virtualization-and-containerization
+# Виртуализация и контейнеризация. Потапчук Сергей.
+
+## [Домашнее задание к занятию 4 «Оркестрация группой Docker контейнеров на примере Docker Compose»](docker-compose/README.md)
