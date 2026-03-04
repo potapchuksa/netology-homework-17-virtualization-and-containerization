@@ -30,6 +30,22 @@ Hey, Netology
 
 ## Решение
 
+![](img/img-01-01.png)
+
+![](img/img-01-02.png)
+
+![](img/img-01-03.png)
+
+![](img/img-01-04.png)
+
+![](img/img-01-05.png)
+
+![](img/img-01-06.png)
+
+![](img/img-01-07.png)
+
+[Ссылка на репозиторий](https://hub.docker.com/repository/docker/vezhlivec/custom-nginx/tags)
+
 ---
 
 ## Задача 2
