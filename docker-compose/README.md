@@ -137,6 +137,8 @@ Hey, Netology
 
 ![](img/img-04-02.png)
 
+![](img/img-04-03.png)
+
 ---
 
 ## Задача 5
