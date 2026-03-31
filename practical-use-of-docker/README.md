@@ -202,6 +202,67 @@ docker exec -it mysql-local mysql -uroot -p$MYSQL_ROOT_PASSWORD
 
 ## Решение
 
+```YAML
+include:
+  - proxy.yaml
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: web_python
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      backend:
+        ipv4_address: 172.20.0.5
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0.27
+    container_name: db_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      backend:
+        ipv4_address: 172.20.0.10
+    restart: unless-stopped
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  mysql-data:
+```
+
+![](img/img-03-01.png)
+
+![](img/img-03-02.png)
+
+![](img/img-03-03.png)
+
+![](img/img-03-04.png)
+
+![](img/img-03-05.png)
+
+![](img/img-03-06.png)
+
 ---
 
 ## Задача 4
