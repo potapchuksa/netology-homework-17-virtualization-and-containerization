@@ -277,6 +277,116 @@ volumes:
 
 ## Решение
 
+```bash
+yc vpc network create \
+  --name shvirtd-network \
+  --description "Network for shvirtd project"
+
+yc vpc subnet create \
+  --name shvirtd-subnet-a \
+  --network-name shvirtd-network \
+  --zone ru-central1-a \
+  --range 10.0.0.0/24 \
+  --description "Subnet for shvirtd in ru-central1-a"
+
+yc compute instance create \
+  --name shvirtd \
+  --hostname shvirtd \
+  --zone ru-central1-a \
+  --platform standard-v3 \
+  --cores 2 \
+  --memory 2GB \
+  --core-fraction 20 \
+  --create-boot-disk type=network-hdd,size=10GB,image-family=ubuntu-2204-lts,image-folder-id=standard-images \
+  --public-ip \
+  --ssh-key ~/.ssh/id_rsa.pub \
+  --metadata serial-port-enable=1 \
+  --preemptible
+```
+
+![](img/img-04-01.png)
+
+![](img/img-04-02.png)
+
+![](img/img-04-03.png)
+
+![](img/img-04-04.png)
+
+Установил Docker по документации с оффициального сайта.
+
+![](img/img-04-05.png)
+
+![](img/img-04-06.png)
+
+Скрипт для деплоя
+
+```bash
+#!/bin/bash
+set -e
+
+REPO_URL="https://github.com/potapchuksa/netology-homework-17-virtualization-and-containerization-shvirtd-example-python.git"
+DEPLOY_DIR="/opt/shvirtd-example"
+
+if [ -d "$DEPLOY_DIR" ]; then
+    cd "$DEPLOY_DIR" && git pull
+else
+    sudo git clone "$REPO_URL" "$DEPLOY_DIR"
+    sudo chown -R $USER:$USER "$DEPLOY_DIR"
+    cd "$DEPLOY_DIR"
+fi
+
+[ ! -f ".env" ] && cat > .env << EOF
+MYSQL_ROOT_PASSWORD=VeryStrongRoot123!
+MYSQL_DATABASE=virtd
+MYSQL_USER=app
+MYSQL_PASSWORD=VeryStrongApp456!
+EOF
+
+docker compose down --remove-orphans 2>/dev/null || true
+docker compose up -d --build
+```
+(Зря писал блок с созданием .env файла, но по-правильному его хранить нельзя, еще хотел рандомные пароли генерить)
+
+Скопировал
+
+![](img/img-04-07.png)
+
+Запустил
+
+![](img/img-04-08.png)
+
+![](img/img-04-09.png)
+
+![](img/img-04-10.png)
+
+Протестировал
+
+![](img/img-04-11.png)
+
+Проверил данные в requests
+
+![](img/img-04-12.png)
+
+```bash
+docker context create yc-remote --docker "host=ssh://yc-user@93.77.178.133"
+docker context use yc-remote
+docker info
+```
+
+![](img/img-04-13.png)
+
+![](img/img-04-14.png)
+
+![](img/img-04-15.png)
+
+![](img/img-04-16.png)
+
+![](img/img-04-17.png)
+
+Вернулся на локальный
+
+![](img/img-04-18.png)
+
 ---
 
 ## Задача 5 (*)
@@ -289,6 +399,42 @@ volumes:
 
 ## Решение
 
+Файл `/opt/backup/bin/backup` (root:root 700)
+
+```bash
+#!/bin/sh
+now=$(date +"%Y%m%d_%H%M%S")
+/usr/bin/mysqldump --opt -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} > "/backup/${now}_${MYSQL_DATABASE}.sql"
+ls -t /backup/*.sql 2>/dev/null | tail -n +11 | xargs -r rm
+```
+
+Файл `/opt/backup/bin/crontab` (root:root 600)
+
+```
+* * * * * /usr/local/bin/backup
+```
+
+Запускаем контейнер
+
+```bash
+sudo docker run -d \
+  --name mysql-backup-cron \
+  --restart unless-stopped \
+  --network shvirtd-example_backend \
+  -v /opt/backup:/backup \
+  -v /opt/backup/bin/backup:/usr/local/bin/backup \
+  -v /opt/backup/bin/crontab:/var/spool/cron/crontabs/root \
+  -e MYSQL_HOST=db_mysql \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=QwErTy1234 \
+  -e MYSQL_DATABASE=virtd \
+  schnitzler/mysqldump
+```
+
+![](img/img-05-01.png)
+
+![](img/img-05-02.png)
+
 ---
 
 ## Задача 6
@@ -298,6 +444,16 @@ volumes:
 ---
 
 ## Решение
+
+![](img/img-06-01.png)
+
+![](img/img-06-02.png)
+
+![](img/img-06-03.png)
+
+![](img/img-06-04.png)
+
+![](img/img-06-05.png)
 
 ---
 
@@ -309,6 +465,8 @@ volumes:
 
 ## Решение
 
+![](img/img-06-06.png)
+
 ---
 
 ## Задача 6.2 (**)
@@ -319,6 +477,8 @@ volumes:
 
 ## Решение
 
+![](img/img-06-07.png)
+
 ---
 
 ## Задача 7 (***)
@@ -326,8 +486,3 @@ volumes:
 Предоставьте скриншоты  действий .
 
 ---
-
-## Решение
-
----
-
