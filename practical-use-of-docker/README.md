@@ -1,5 +1,7 @@
 # Домашнее задание к занятию 5. «Практическое применение Docker». Потапчук Сергей.
 
+### [Ссылка на fork репозитория](https://github.com/potapchuksa/netology-homework-17-virtualization-and-containerization-shvirtd-example-python)
+
 ### Инструкция к выполнению
 
 1. Для выполнения заданий обязательно ознакомьтесь с [инструкцией](https://github.com/netology-code/devops-materials/blob/master/cloudwork.MD) по экономии облачных ресурсов. Это нужно, чтобы не расходовать средства, полученные в результате использования промокода.
